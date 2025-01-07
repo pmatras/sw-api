@@ -1,0 +1,26 @@
+services:
+  backend:
+    container_name: sw-api-dev
+    image: sw-api-dev
+    platform: ${TARGET_PLATFORM:-linux/amd64}
+    build:
+      context: ..
+      platforms:
+        - ${TARGET_PLATFORM:-linux/amd64}
+      dockerfile: ./docker/Dockerfile.backend.dev
+    ports:
+      - ${BACKEND_APP_PORT}:${BACKEND_APP_PORT}
+    environment:
+      BACKEND_APP_PORT: ${BACKEND_APP_PORT}
+      APP_ENV: ${APP_ENV}
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    stop_grace_period: 5s
+
+    volumes:
+      - ..:/app
+      - /app/node_modules
